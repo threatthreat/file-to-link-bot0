@@ -3,13 +3,13 @@ import asyncio
 import os
 
 # Load API details from environment variables
-API_ID = int(os.getenv("28866244"))
-API_HASH = os.getenv("e6ade414044776910e7c63ff4643a7b0")
+API_ID = int(os.getenv("API_ID"))
+API_HASH = os.getenv("API_HASH")
 SESSION_NAME = "teleb"
 
 # Source & Destination Channel IDs
-SOURCE_CHANNEL = int(os.getenv("-1002118541881"))
-DEST_CHANNEL = int(os.getenv("-1002613474973"))
+SOURCE_CHANNEL = int(os.getenv("SOURCE_CHANNEL"))
+DEST_CHANNEL = int(os.getenv("DEST_CHANNEL"))
 
 # Initialize Telethon client
 client = TelegramClient(SESSION_NAME, API_ID, API_HASH)
