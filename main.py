@@ -1,6 +1,7 @@
 from telethon import TelegramClient, events
 import asyncio
 import os
+from flask import Flask
 
 # Load API details from environment variables
 API_ID = int(os.getenv("API_ID"))
@@ -33,11 +34,23 @@ async def new_message_handler(event):
         except Exception as e:
             print(f"Error forwarding new message: {e}")
 
-async def main():
+async def start_bot():
     print("Starting userbot...")
+    await client.start()
+    print("Userbot started successfully!")
     await forward_all_messages()
     print("Listening for new messages...")
     await client.run_until_disconnected()
 
-with client:
-    client.loop.run_until_complete(main())
+# Dummy Web Server for Health Check
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return "Userbot is running!", 200
+
+# Run Flask & Telethon together
+if __name__ == "__main__":
+    loop = asyncio.get_event_loop()
+    loop.create_task(start_bot())  # Start Telethon bot
+    app.run(host="0.0.0.0", port=8000)  # Start Flask web server
