@@ -1,56 +1,47 @@
+from flask import Flask
+from threading import Thread
 from telethon import TelegramClient, events
 import asyncio
-import os
-from flask import Flask
 
-# Load API details from environment variables
-API_ID = int(os.getenv("API_ID"))
-API_HASH = os.getenv("API_HASH")
+# Fake web server for Koyeb
+app = Flask(__name__)
+
+@app.route("/")
+def home():
+    return "Userbot Running!"
+
+def run_flask():
+    app.run(host="0.0.0.0", port=8080)  # Koyeb needs an open port
+
+# Telegram API details
+API_ID = 28866244
+API_HASH = "e6ade414044776910e7c63ff4643a7b0"
 SESSION_NAME = "teleb"
 
-# Source & Destination Channel IDs
-SOURCE_CHANNEL = int(os.getenv("SOURCE_CHANNEL"))
-DEST_CHANNEL = int(os.getenv("DEST_CHANNEL"))
+# Channel details
+SOURCE_CHANNEL = -1002118541881  
+DEST_CHANNEL = -1002613474973   
 
-# Initialize Telethon client
 client = TelegramClient(SESSION_NAME, API_ID, API_HASH)
-
-async def forward_all_messages():
-    async for message in client.iter_messages(SOURCE_CHANNEL):
-        if message.media:
-            try:
-                await message.forward_to(DEST_CHANNEL)
-                print(f"Forwarded: {message.id}")
-                await asyncio.sleep(3)  # Prevent flood wait
-            except Exception as e:
-                print(f"Error forwarding {message.id}: {e}")
 
 @client.on(events.NewMessage(chats=SOURCE_CHANNEL))
 async def new_message_handler(event):
+    """ Forward new incoming messages from the source channel. """
     if event.message.media:
         try:
             await event.message.forward_to(DEST_CHANNEL)
-            print(f"Forwarded new message: {event.message.id}")
+            print(f"✅ Forwarded new message: {event.message.id}")
         except Exception as e:
-            print(f"Error forwarding new message: {e}")
+            print(f"⚠️ Error forwarding new message: {e}")
 
-async def start_bot():
-    print("Starting userbot...")
-    await client.start()
-    print("Userbot started successfully!")
-    await forward_all_messages()
-    print("Listening for new messages...")
+async def main():
+    """ Start the bot """
+    print("🚀 Starting userbot...")
+    print("👀 Listening for new messages...")
     await client.run_until_disconnected()
 
-# Dummy Web Server for Health Check
-app = Flask(__name__)
+# Run Flask in a separate thread
+Thread(target=run_flask).start()
 
-@app.route('/')
-def home():
-    return "Userbot is running!", 200
-
-# Run Flask & Telethon together
-if __name__ == "__main__":
-    loop = asyncio.get_event_loop()
-    loop.create_task(start_bot())  # Start Telethon bot
-    app.run(host="0.0.0.0", port=8000)  # Start Flask web server
+with client:
+    client.loop.run_until_complete(main())
