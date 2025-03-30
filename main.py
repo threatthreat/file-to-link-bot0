@@ -6,13 +6,19 @@ import os
 API_ID = int(os.getenv("API_ID", 28866244))  # Ensure it's an integer
 API_HASH = os.getenv("API_HASH", "e6ade414044776910e7c63ff4643a7b0")
 SESSION_NAME = "teleb"  # Ensure this file is uploaded to Railway
+SESSION_FILE = f"{SESSION_NAME}.session"  # Actual session file
 
 # Channel details
 SOURCE_CHANNEL = -1002118541881  # Source channel ID
 DEST_CHANNEL = -1002613474973   # Destination channel ID
 
-# Initialize the Telegram Client
-client = TelegramClient(SESSION_NAME, API_ID, API_HASH)
+# Ensure session file exists
+if not os.path.exists(SESSION_FILE):
+    print(f"❌ Session file '{SESSION_FILE}' not found! Make sure it's in your Railway repo.")
+    exit(1)
+
+# Initialize the Telegram Client with session file
+client = TelegramClient(SESSION_FILE, API_ID, API_HASH)
 
 async def forward_all_messages():
     """ Forward all existing messages from the source channel. """
@@ -38,7 +44,11 @@ async def new_message_handler(event):
 async def main():
     """ Main function to start the bot. """
     print("🚀 Starting userbot...")
-    await client.start()  # Auto-login using session file
+    await client.connect()  # Connect without asking for input
+    if not await client.is_user_authorized():
+        print("❌ Session is invalid. Please re-login locally and re-upload the session file.")
+        exit(1)
+
     print("✅ Userbot started! Listening for new messages...")
     await forward_all_messages()  # Forward old messages
     await client.run_until_disconnected()
