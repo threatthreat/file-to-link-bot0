@@ -29,7 +29,7 @@ async def forward_all_messages():
                     await message.forward_to(DEST_CHANNEL)
                     forwarded_messages.add(message.id)
                     print(f"✅ Forwarded: {message.id}")
-                    await asyncio.sleep(1.5)  # Prevent flood wait
+                    await asyncio.sleep(2.7)  # Prevent flood wait
             except Exception as e:
                 print(f"⚠️ Error forwarding {message.id}: {e}")
 
