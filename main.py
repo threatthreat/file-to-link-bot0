@@ -3,6 +3,8 @@ import threading
 from telethon import TelegramClient, events
 import asyncio
 import os
+from telethon.sessions import StringSession
+
 
 # Load API details
 API_ID = int(os.getenv("API_ID", 28866244))
