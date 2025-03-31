@@ -10,7 +10,7 @@ API_ID = 28866244  # Ensure it's an integer
 API_HASH = "e6ade414044776910e7c63ff4643a7b0"
 
 # Use your session string directly
-SESSION_STRING = "YOUR_SESSION_STRING"
+SESSION_STRING = "1BVtsOH4Bu3hDWQ4cfiLiKHtlQgnzMCVhlKEU-ryOukdrydA-inf_gC8Ho6X2YD3qdugY4l1mfFJyEBcUNMOd3asVQBwv6TMmEl96_bVtrT8zN9TzctFT6jLAe5110QXpzlvFlJvo5Wlfe8wujvzi8nGJ1Gv7mXy54JpQwZu9YMgSQX-1-umjJxzhganmtH-eIWCGPTEvFMhKUGTHJcL_Zkgjc9zPpmIBp_Jv3yjW1cdOtMLzNtbmofiDykqj5yNu2BNP5K9yyIQqh0vQC-3LUwPh5I0oTCYsFod2VsZuKgcKbIpS5qpJooiBLx7t5sZDBvzah6qoOBLcYjqi_C1C4r62tT3RIQc="
 
 # Channel details
 SOURCE_CHANNEL = -1002118541881  # Source channel ID
