@@ -10,7 +10,7 @@ API_ID = 28866244  # Ensure it's an integer
 API_HASH = "e6ade414044776910e7c63ff4643a7b0"
 
 # Use your session string directly
-SESSION_STRING = "1BVtsOHcBu2KmILIwVTdhfIyrCxx90tjXlMkXHDsTGroLTPVYJCw0iHMvD8meJG7e2mPXD8I2SNL7PvgJjvzU7P31ku1ERBWuQorVJTDm6JzHipPGZt6WUdqS9bFicN2nkZrcx9zchGDiEIEzjDnEjV_y4EOe2QT3_gGAfjUxsZsOaHpV_eefyYX8IgT4LL5djWp_HqgFzUM3OEe4iVCvKMTOaiVr6mXb4hPLNBe-OZsXXJeNMIW5aFfFOo4sQRLR1ni9i0Hshh5nGNVjoi9SMWEEsHCWzWlnHciLSDfhGyNxvmaXR8sBTFwZAoNhwBHYGgRTXIYkSUo9bX5tA7hkbqekKX9LYpE="
+SESSION_STRING = "YOUR_SESSION_STRING"
 
 # Channel details
 SOURCE_CHANNEL = -1002118541881  # Source channel ID
@@ -27,25 +27,27 @@ async def forward_all_messages():
     async for message in client.iter_messages(SOURCE_CHANNEL):
         if message.media and message.id not in forwarded_messages:
             try:
-                if message.file and message.file.ext.lower() in [".mp4", ".mkv"]:  # Only forward videos (MP4, MKV)
+                if message.file and message.file.ext.lower() in [".mp4", ".mkv"]:  # Only forward videos
                     await message.forward_to(DEST_CHANNEL)
                     forwarded_messages.add(message.id)
                     print(f"✅ Forwarded: {message.id}")
-                    await asyncio.sleep(2.5)  # Prevent flood wait
+                    await asyncio.sleep(2.7)  # Prevent flood wait
             except Exception as e:
                 print(f"⚠️ Error forwarding {message.id}: {e}")
+                await asyncio.sleep(10)  # Extra delay on error
 
-@client.on(events.NewMessage(chats=[SOURCE_CHANNEL]))  # Wrap in a list
+@client.on(events.NewMessage(chats=[SOURCE_CHANNEL]))
 async def new_message_handler(event):
     """ Forward new incoming messages from the source channel without duplicates. """
     if event.message.media and event.message.id not in forwarded_messages:
         try:
-            if event.message.file and event.message.file.ext.lower() in [".mp4", ".mkv"]:  # Check file exists
+            if event.message.file and event.message.file.ext.lower() in [".mp4", ".mkv"]:
                 await event.message.forward_to(DEST_CHANNEL)
                 forwarded_messages.add(event.message.id)
                 print(f"✅ Forwarded new message: {event.message.id}")
         except Exception as e:
             print(f"⚠️ Error forwarding new message: {e}")
+            await asyncio.sleep(10)  # Extra delay on error
 
 async def test_access():
     """ Test if the bot has access to the source channel. """
@@ -58,18 +60,21 @@ async def test_access():
 async def main():
     """ Main function to start the bot and check connection. """
     print("🚀 Starting userbot...")
-    
-    await client.connect()
-    
-    if not await client.is_user_authorized():
-        print("❌ Session is not authorized! Check SESSION_STRING.")
-        return
-    
-    print("✅ Userbot started! Listening for new messages...")
-
-    await test_access()  # Verify bot has access to source channel
-    await forward_all_messages()  # Forward old messages
-    await client.run_until_disconnected()
+    while True:
+        try:
+            await client.connect()
+            
+            if not await client.is_user_authorized():
+                print("❌ Session is not authorized! Check SESSION_STRING.")
+                return
+            
+            print("✅ Userbot started! Listening for new messages...")
+            await test_access()
+            await forward_all_messages()
+            await client.run_until_disconnected()
+        except Exception as e:
+            print(f"⚠️ Connection lost! Reconnecting in 10 seconds... Error: {e}")
+            await asyncio.sleep(10)
 
 # Flask App for UptimeRobot
 app = Flask(__name__)
@@ -82,7 +87,7 @@ def run_flask():
     app.run(host="0.0.0.0", port=8080)
 
 # Start Flask in a separate thread
-threading.Thread(target=run_flask).start()
+threading.Thread(target=run_flask, daemon=True).start()
 
 # Start the bot
 client.loop.run_until_complete(main())
