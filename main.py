@@ -11,7 +11,7 @@ SESSION_STRING = "1BVtsOHcBu2KmILIwVTdhfIyrCxx90tjXlMkXHDsTGroLTPVYJCw0iHMvD8meJ
 SOURCE_CHANNEL = -1002118541881
 DEST_CHANNEL = -1002696495424
 
-client = TelegramClient("bot", API_ID, API_HASH).start(session_string=SESSION_STRING)
+client = TelegramClient(StringSession(SESSION_STRING), API_ID, API_HASH)
 
 app = Flask(__name__)
 
