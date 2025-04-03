@@ -21,7 +21,7 @@ client = TelegramClient(StringSession(SESSION_STRING), API_ID, API_HASH)
 # Track forwarded files to prevent duplicates
 forwarded_files = set()
 file_count = 0  
-delay = random.randint(3, 4)  
+delay = random.randint(8, 12)  
 restricted = False  
 
 def get_file_hash(message):
